@@ -29,6 +29,9 @@ public class Pedido {
     @Getter
     private BigDecimal valorTotal;
 
+    @Column(columnDefinition = "TEXT")
+    private String descricao;
+
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     @Getter

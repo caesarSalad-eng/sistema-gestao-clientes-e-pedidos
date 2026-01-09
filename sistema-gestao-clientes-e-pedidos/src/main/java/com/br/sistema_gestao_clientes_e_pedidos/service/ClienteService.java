@@ -3,10 +3,8 @@ package com.br.sistema_gestao_clientes_e_pedidos.service;
 import com.br.sistema_gestao_clientes_e_pedidos.model.Cliente;
 import com.br.sistema_gestao_clientes_e_pedidos.repository.ClienteRepository;
 import com.br.sistema_gestao_clientes_e_pedidos.repository.PedidoRepository;
-import jdk.dynalink.linker.LinkerServices;
 import org.springframework.stereotype.Service;
 
-import javax.crypto.spec.OAEPParameterSpec;
 import java.util.List;
 import java.util.Optional;
 
@@ -136,7 +134,7 @@ public class ClienteService {
             return "Cliente não encontrado.";
 
         }
-        
+
         Cliente cliente = optClienteFindByEmail.get();
 
         StringBuilder resultadoBuscaClientePorEmail = new StringBuilder();
@@ -150,5 +148,87 @@ public class ClienteService {
         return resultadoBuscaClientePorEmail.toString();
 
     }
+
+    public String atualizarCliente(String email, Long idClienteExistente, String novoNome, String novoEmail, String novoTelefone){
+
+        Cliente novoCliente;
+
+        Optional<Cliente> buscaClienteExistente = clienteRepository.findById(idClienteExistente);
+
+        if (buscaClienteExistente.isEmpty()){
+
+            return "Cliente não encontrado. Tente Novamente";
+
+        }
+
+        novoCliente = buscaClienteExistente.get();
+
+        if (novoNome.isBlank()){
+
+            return "Nome inválido. Tente Novamente";
+
+        }
+
+        if (novoEmail.isBlank()){
+
+            return "Email inválido. Tente Novamente";
+
+        }
+
+
+        if (novoTelefone.isBlank()){
+
+            return "Telefone inválido. Tente Novamente";
+
+        }
+
+        novoCliente.setNome(novoNome);
+        novoCliente.setEmail(novoEmail);
+        novoCliente.setTelefone(novoTelefone);
+
+        Optional<Cliente> buscaEmailExistente = clienteRepository.findByEmail(novoEmail);
+
+        if (buscaEmailExistente.isPresent() && !buscaEmailExistente.get().getId().equals(idClienteExistente)) {
+
+            return "Este email já está cadastrado. Tente Novamente";
+        }
+        clienteRepository.save(novoCliente);
+
+        return "Usuário atualizado com Sucesso!!";
+
+    }
+
+    public String deletarCliente(Long idClienteExclusao){
+
+        if (idClienteExclusao == null){
+
+            return "Id inválido. Tente Novamente";
+
+        }
+
+        Optional<Cliente> buscaClienteExclusao = clienteRepository.findById(idClienteExclusao);
+
+        if (buscaClienteExclusao.isEmpty()){
+
+            return "Cliente não encontrado. Tente Novamente";
+
+        }
+
+        Cliente clienteExclusao = buscaClienteExclusao.get();
+
+        if (!clienteExclusao.getPedidos().isEmpty()){
+
+            return "O cliente tem pedidos Ativos ou Atrasados. Não foi possível deletar";
+
+
+        }
+
+        clienteRepository.delete(clienteExclusao);
+
+        return "O cliente deletado com Sucesso!!";
+
+
+    }
+
 
 }
