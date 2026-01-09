@@ -20,15 +20,20 @@ public class Pedido {
     private Long id;
 
     @Getter
+    @Setter
     private Date dataPedido;
 
+    @Getter
+    @Setter
     @Enumerated(EnumType.STRING)
     private StatusPedido statusPedido;
 
     @Setter
     @Getter
-    private BigDecimal valorTotal;
+    private Double valorTotal;
 
+    @Getter
+    @Setter
     @Column(columnDefinition = "TEXT")
     private String descricao;
 

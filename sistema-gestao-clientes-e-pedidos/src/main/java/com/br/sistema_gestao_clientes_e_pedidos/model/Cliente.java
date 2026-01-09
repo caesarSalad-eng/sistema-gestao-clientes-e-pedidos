@@ -38,6 +38,7 @@ public class Cliente {
     @Getter
     private List<Pedido> pedidos;
 
+    @Setter
     @Getter
     private Date dataCadastro;
 

@@ -2,10 +2,12 @@ package com.br.sistema_gestao_clientes_e_pedidos.model;
 
 public enum StatusPedido {
 
-    CONCLUIDO,
+    FINALIZADO,
 
-    EM_ANDAMENTO,
+    ATRASADO,
 
-    CANCELADO
+    CANCELADO,
+
+    ATIVO
 
 }
