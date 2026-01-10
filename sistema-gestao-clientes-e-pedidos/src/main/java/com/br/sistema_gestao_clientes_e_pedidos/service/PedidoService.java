@@ -7,7 +7,6 @@ import com.br.sistema_gestao_clientes_e_pedidos.repository.ClienteRepository;
 import com.br.sistema_gestao_clientes_e_pedidos.repository.PedidoRepository;
 import org.springframework.stereotype.Service;
 
-import java.awt.*;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -47,12 +46,6 @@ public class PedidoService {
 
          List<Pedido> buscarPedidoCliente = pedidoRepository.findByCliente(cliente);
 
-         if (buscarPedidoCliente.isEmpty()){
-
-             return "Cliente ainda não tem pedidos ATIVOS. Está apto para realizar pedido";
-
-         }
-
          for (Pedido pedido : buscarPedidoCliente){
 
              if (pedido.getStatusPedido() == StatusPedido.ATRASADO || pedido.getStatusPedido() == StatusPedido.ATIVO){
@@ -89,7 +82,7 @@ public class PedidoService {
 
         if (listaPedidos.isEmpty()){
 
-            return "Não tem pedidos ATIVOS no momento";
+            return "Não existem pedidos cadastrados";
 
         }
 
@@ -111,7 +104,7 @@ public class PedidoService {
 
     public String listarPedidosPorStatus(StatusPedido statusPedido){
 
-        List<Pedido> listarPorStatus = pedidoRepository.findByStatus(statusPedido);
+        List<Pedido> listarPorStatus = pedidoRepository.findByStatusPedido(statusPedido);
 
         if (listarPorStatus.isEmpty()){
 
@@ -134,15 +127,9 @@ public class PedidoService {
         return resultadoListarPorStatus.toString();
     }
 
-    public String listarPedidosPorCliente(Long idCliente){
+    public String listarPedidosPorCliente(Cliente cliente){
 
-        if (idCliente == null){
-
-            return "Id inválido. Tente Novamente";
-
-        }
-
-        List<Pedido> listarPedidosPorCliente = pedidoRepository.findByCliente(idCliente);
+        List<Pedido> listarPedidosPorCliente = pedidoRepository.findByCliente(cliente);
 
         StringBuilder resultadoListaPorCliente = new StringBuilder();
 
@@ -239,19 +226,91 @@ public class PedidoService {
 
         }
 
-        pedidoAtualizar.setCliente(novoCliente);
         pedidoAtualizar.setValorTotal(novoValorTotal);
         pedidoAtualizar.setDataPedido(novaData);
         pedidoAtualizar.setDescricao(novaDescricao);
+
+        pedidoRepository.save(pedidoAtualizar);
 
         return "Pedido atualizado com Sucesso!!";
 
     }
 
-    public String alterarStatusPedido(StatusPedido statusPedido){
+    public String alterarStatusPedido(Long idPedido, StatusPedido novoStatus){
 
-        
+        if(idPedido == null){
 
+            return "Id Pedido inválido. Tente Novamente";
+
+        }
+
+        Optional<Pedido> buscaPedido = pedidoRepository.findById(idPedido);
+
+        if (buscaPedido.isEmpty()){
+
+            return "Nenhum pedido encontrado";
+
+        }
+
+        Pedido pedido = buscaPedido.get();
+        StatusPedido statusAtual = pedido.getStatusPedido() ;
+
+        if (statusAtual == StatusPedido.FINALIZADO || statusAtual == StatusPedido.CANCELADO){
+
+            return "Pedido foi CANCELADO ou já foi FINALIZADO. Não é possível fazer a alteração";
+
+        }
+
+        if (statusAtual == novoStatus){
+
+            return "O Pedido já está com esse Status";
+
+        }
+
+        if (statusAtual == StatusPedido.ATRASADO){
+
+            if (novoStatus == StatusPedido.ATIVO){
+
+                return "Pedido ATRASADO não pode voltar para ATIVO";
+
+            }
+
+        }
+
+        pedido.setStatusPedido(novoStatus);
+        pedidoRepository.save(pedido);
+
+        return "Status atualizado com Sucesso!!";
+
+    }
+
+    public String deletarPedido(Long idPedido){
+
+        if (idPedido == null){
+
+            return "Id do Pedido inválido. Tente Novamente";
+
+        }
+
+        Optional<Pedido> buscaPedidoExclusao = pedidoRepository.findById(idPedido);
+
+        if (buscaPedidoExclusao.isEmpty()){
+
+            return "Pedido não encontrado";
+
+        }
+
+        Pedido pedidoExclusao = buscaPedidoExclusao.get();
+
+        if (pedidoExclusao.getStatusPedido() == StatusPedido.ATIVO || pedidoExclusao.getStatusPedido() == StatusPedido.ATRASADO){
+
+            return "Não foi possível deletar o Pedido porque ele está ATIVO ou ATRASADO";
+
+        }
+
+        pedidoRepository.delete(pedidoExclusao);
+
+        return "Pedido deletado com Sucesso!!";
 
     }
 
