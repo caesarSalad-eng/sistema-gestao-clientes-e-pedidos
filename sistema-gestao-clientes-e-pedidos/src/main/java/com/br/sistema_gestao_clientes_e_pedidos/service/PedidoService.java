@@ -44,7 +44,7 @@ public class PedidoService {
 
          Cliente cliente = buscarClienteExistente.get();
 
-         List<Pedido> buscarPedidoCliente = pedidoRepository.findByCliente(cliente);
+         List<Pedido> buscarPedidoCliente = pedidoRepository.findByCliente(idCliente);
 
          for (Pedido pedido : buscarPedidoCliente){
 
@@ -127,9 +127,9 @@ public class PedidoService {
         return resultadoListarPorStatus.toString();
     }
 
-    public String listarPedidosPorCliente(Cliente cliente){
+    public String listarPedidosPorCliente(Long idCliente){
 
-        List<Pedido> listarPedidosPorCliente = pedidoRepository.findByCliente(cliente);
+        List<Pedido> listarPedidosPorCliente = pedidoRepository.findByCliente(idCliente);
 
         StringBuilder resultadoListaPorCliente = new StringBuilder();
 
@@ -178,7 +178,7 @@ public class PedidoService {
 
     }
 
-    public String atualizarPedido(Long idPedido, Cliente novoCliente, Double novoValorTotal, Date novaData, String novaDescricao){
+    public String atualizarPedido(Long idPedido, String novoCliente, Double novoValorTotal, String novaDescricao){
 
         if (idPedido == null){
 
@@ -214,12 +214,6 @@ public class PedidoService {
 
         }
 
-        if (novaData == null){
-
-            return "Nova Data inválida. Tente Novamente";
-
-        }
-
         if (novaDescricao == null){
 
             return "Nova Descrição inválida. Tente Novamente";
@@ -227,7 +221,6 @@ public class PedidoService {
         }
 
         pedidoAtualizar.setValorTotal(novoValorTotal);
-        pedidoAtualizar.setDataPedido(novaData);
         pedidoAtualizar.setDescricao(novaDescricao);
 
         pedidoRepository.save(pedidoAtualizar);

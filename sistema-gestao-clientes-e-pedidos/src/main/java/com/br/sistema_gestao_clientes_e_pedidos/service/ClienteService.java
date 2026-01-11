@@ -149,7 +149,7 @@ public class ClienteService {
 
     }
 
-    public String atualizarCliente(String email, Long idClienteExistente, String novoNome, String novoEmail, String novoTelefone){
+    public String atualizarCliente(Long idClienteExistente, String novoNome, String novoEmail, String novoTelefone){
 
         Cliente novoCliente;
 
