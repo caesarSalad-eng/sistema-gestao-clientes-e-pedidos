@@ -1,12 +1,15 @@
 package com.br.sistema_gestao_clientes_e_pedidos.runner;
 
+import com.br.sistema_gestao_clientes_e_pedidos.model.Cliente;
 import com.br.sistema_gestao_clientes_e_pedidos.model.StatusPedido;
 import com.br.sistema_gestao_clientes_e_pedidos.service.ClienteService;
 import com.br.sistema_gestao_clientes_e_pedidos.service.PedidoService;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
 import java.util.Scanner;
 
+@Component
 public class Menu implements CommandLineRunner {
 
     private final ClienteService clienteService;
@@ -89,7 +92,7 @@ public class Menu implements CommandLineRunner {
             System.out.println("\n4 - Buscar Cliente por Email");
             System.out.println("\n5 - Atualizar Cliente");
             System.out.println("\n6 - Deletar Cliente");
-            System.out.println("\n 0 - Voltar ao Menu Principal");
+            System.out.println("\n0 - Voltar ao Menu Principal");
 
              opcaoMenuCliente = sc.nextInt();
             sc.nextLine();
@@ -148,18 +151,18 @@ public class Menu implements CommandLineRunner {
 
         System.out.println("\n== CRIAÇÃO DE CLIENTES ==");
 
-        System.out.println("\n Digite seu Nome Completo: ");
+        System.out.println("\nDigite seu Nome Completo: ");
         nome = sc.nextLine();
 
-        System.out.println("\n Digite seu Email: ");
+        System.out.println("\nDigite seu Email: ");
         email = sc.nextLine();
 
-        System.out.println("\n Digite seu Telefone: ");
+        System.out.println("\nDigite seu Telefone: ");
         telefone = sc.nextLine();
 
-       String resultadoFinalCriarCliente = clienteService.cadastroCliente(nome, email, telefone);
+       String resultFinal = clienteService.cadastroCliente(nome, email, telefone);
 
-        System.out.println(resultadoFinalCriarCliente);
+        System.out.println(resultFinal);
 
     }
 
@@ -167,15 +170,15 @@ public class Menu implements CommandLineRunner {
 
         System.out.println("\n== LISTA DE CLIENTES CADASTRADOS ==");
 
-        String resultadoFinalListaClientes = clienteService.listarClientes();
+        String resultFinal = clienteService.listarClientes();
 
-        System.out.println(resultadoFinalListaClientes);
+        System.out.println(resultFinal);
 
     }
 
     public void buscarClientePorId(){
 
-        Long idClienteBusca;
+        long idClienteBusca;
 
         System.out.println("\n== BUSCA DE CLIENTE POR ID ==");
 
@@ -183,9 +186,9 @@ public class Menu implements CommandLineRunner {
         idClienteBusca = sc.nextLong();
         sc.nextLine();
 
-        String resultadoFinalBuscaClientePorId = clienteService.buscaClientePorID(idClienteBusca);
+        String resultFinal = clienteService.buscaClientePorID(idClienteBusca);
 
-        System.out.println(resultadoFinalBuscaClientePorId);
+        System.out.println(resultFinal);
 
     }
 
@@ -198,15 +201,15 @@ public class Menu implements CommandLineRunner {
         System.out.println("\nDigite o Email do Cliente que deseja buscar");
         emailBusca = sc.nextLine();
 
-        String resultadoFinalBuscaClientePorEmail = clienteService.buscaClientePorEmail(emailBusca);
+        String resultFinal = clienteService.buscaClientePorEmail(emailBusca);
 
-        System.out.println(resultadoFinalBuscaClientePorEmail);
+        System.out.println(resultFinal);
 
     }
 
     public void atualizarCliente(){
 
-        Long idClienteAtualizar;
+        long idClienteAtualizar;
 
         String novoNome, novoEmail, novoTelefone;
 
@@ -225,15 +228,15 @@ public class Menu implements CommandLineRunner {
         System.out.println("\nDigite o Novo Telefone que deseja cadastrar: ");
         novoTelefone = sc.nextLine();
 
-        String resultadoFinalAtualizarCliente = clienteService.atualizarCliente(idClienteAtualizar, novoNome, novoEmail, novoTelefone);
+        String resultFinal = clienteService.atualizarCliente(idClienteAtualizar, novoNome, novoEmail, novoTelefone);
 
-        System.out.println(resultadoFinalAtualizarCliente);
+        System.out.println(resultFinal);
 
     }
 
     public void deletarCliente(){
 
-        Long idClienteExclusao;
+        long idClienteExclusao;
 
         System.out.println("\n == EXCLUSÃO DE CLIENTE");
 
@@ -241,9 +244,9 @@ public class Menu implements CommandLineRunner {
         idClienteExclusao = sc.nextLong();
         sc.nextLine();
 
-       String resultadoFinalDeletarCliente =  clienteService.deletarCliente(idClienteExclusao);
+       String resultFinal =  clienteService.deletarCliente(idClienteExclusao);
 
-        System.out.println(resultadoFinalDeletarCliente);
+        System.out.println(resultFinal);
 
     }
 
@@ -334,8 +337,6 @@ public class Menu implements CommandLineRunner {
 
         String descricaoPedido;
 
-        double valorTotalPedido;
-
         System.out.println("\n== CRIAÇÃO DE PEDIDO ==");
 
         System.out.println("Digite o ID do CLiente que fez o Pedido: ");
@@ -346,12 +347,16 @@ public class Menu implements CommandLineRunner {
         descricaoPedido = sc.nextLine();
 
         System.out.println("\nDigite o Valor Total do Pedido: ");
-        valorTotalPedido = sc.nextDouble();
-        sc.nextLine();
 
-        String resultadoFinalCriarPedido = pedidoService.criarPedido(idClientePedido, descricaoPedido, valorTotalPedido);
+        String valorDigitado = sc.nextLine().replace(",", ".");
 
-        System.out.println(resultadoFinalCriarPedido);
+        double valorTotalPedido;
+
+        valorTotalPedido = Double.parseDouble(valorDigitado);
+
+        String resultFinal = pedidoService.criarPedido(idClientePedido, descricaoPedido, valorTotalPedido);
+
+        System.out.println(resultFinal);
 
     }
 
@@ -359,9 +364,9 @@ public class Menu implements CommandLineRunner {
 
         System.out.println("\n== LISTA DE TODOS OS PEDIDOS ==");
 
-       String resultadoFinalListaTodosPedidos =  pedidoService.listarPedidos();
+       String resultFinal =  pedidoService.listarPedidos();
 
-        System.out.println(resultadoFinalListaTodosPedidos);
+        System.out.println(resultFinal);
 
     }
 
@@ -371,12 +376,13 @@ public class Menu implements CommandLineRunner {
 
         System.out.println("\n== LISTA DE PEDIDOS POR STATUS ==");
 
-        System.out.println("Digite o Status dos Pedidos que dejesa listar: ");
+        System.out.println("\nDigite o Status dos Pedidos que dejesa listar: ");
+        System.out.println("\nStatus disponíveis:\n" + "ATIVO | ATRASADO | FINALIZADO | CANCELADO");
         listaPedidoPorStatus = StatusPedido.valueOf(sc.nextLine());
 
-       String resultadoFinalListarPedidoStatus = pedidoService.listarPedidosPorStatus(listaPedidoPorStatus);
+       String resultFinal = pedidoService.listarPedidosPorStatus(listaPedidoPorStatus);
 
-        System.out.println(resultadoFinalListarPedidoStatus);
+        System.out.println(resultFinal);
     }
 
     public void listarPedidosPorCliente(){
@@ -385,13 +391,13 @@ public class Menu implements CommandLineRunner {
 
         System.out.println("\n== LISTAR PEDIDOS POR CLIENTES ==");
 
-        System.out.println("Digite o Nome do Cliente que deseja listar os Pedidos: ");
+        System.out.println("\nDigite o ID do Cliente que deseja listar os Pedidos: ");
         idClienteListarPedidos = sc.nextLong();
         sc.nextLine();
 
-        String resultadoFinalListarPedidosPorCliente = pedidoService.listarPedidosPorCliente(idClienteListarPedidos);
+        String resultFinal = pedidoService.listarPedidosPorCliente(idClienteListarPedidos);
 
-        System.out.println(resultadoFinalListarPedidosPorCliente);
+        System.out.println(resultFinal);
 
     }
 
@@ -405,17 +411,15 @@ public class Menu implements CommandLineRunner {
         idPedidoBusca = sc.nextLong();
         sc.nextLine();
 
-       String resultadoFinalBuscarPedidoPorId = pedidoService.buscarPedidoPorId(idPedidoBusca);
+       String resultFinal = pedidoService.buscarPedidoPorId(idPedidoBusca);
 
-        System.out.println(resultadoFinalBuscarPedidoPorId);
+        System.out.println(resultFinal);
 
     }
 
-    public void atualizarPedido(){
+    public void atualizarPedido() {
 
-        long idPedidoAtualizar;
-
-        String novoCliente;
+        long idPedido, idNovoCliente;
 
         double novoValor;
 
@@ -423,30 +427,30 @@ public class Menu implements CommandLineRunner {
 
         System.out.println("\n== ATUALIZAÇÃO DE PEDIDO ==");
 
-        System.out.println("\nDigite o ID do Pedido que deseja atualizar: ");
-        idPedidoAtualizar = sc.nextLong();
+        System.out.println("\nDigite o ID do Pedido: ");
+        idPedido = sc.nextLong();
         sc.nextLine();
 
-        System.out.println("\nDigite o nome do Novo Cliente: ");
-        novoCliente = sc.nextLine();
-
-        System.out.println("\nDigite o Novo Valor: ");
-        novoValor = sc.nextDouble();
+        System.out.println("\nDigite o ID do Novo Cliente: ");
+        idNovoCliente = sc.nextLong();
         sc.nextLine();
+
+        System.out.print("\nDigite o Novo Valor: ");
+
+        String valorInput = sc.nextLine().replace(",", ".");
+        novoValor = Double.parseDouble(valorInput);
 
         System.out.println("\nDigite a Nova Descrição: ");
         novaDescricao = sc.nextLine();
 
+        String resultFinal = pedidoService.atualizarPedido(idPedido, idNovoCliente, novoValor, novaDescricao);
 
-        String resultadoFinalAtualizarPedido = pedidoService.atualizarPedido(idPedidoAtualizar, novoCliente, novoValor, novaDescricao);
-
-        System.out.println(resultadoFinalAtualizarPedido);
-
+        System.out.println(resultFinal);
     }
 
     public void alterarStatusPedido(){
 
-        Long idPedidoAlterarStatus;
+        long idPedidoAlterarStatus;
 
         StatusPedido alterarStatusPedido;
 
@@ -457,27 +461,28 @@ public class Menu implements CommandLineRunner {
         sc.nextLine();
 
         System.out.println("\nDigite o novo Status");
+        System.out.println("\nStatus disponíveis:\n" + "ATIVO | ATRASADO | FINALIZADO | CANCELADO");
         alterarStatusPedido = StatusPedido.valueOf(sc.nextLine());
 
-        String resultaadoFinalAlterarStatusPedido = pedidoService.alterarStatusPedido(idPedidoAlterarStatus, alterarStatusPedido);
+        String resultFinal = pedidoService.alterarStatusPedido(idPedidoAlterarStatus, alterarStatusPedido);
 
-        System.out.println(resultaadoFinalAlterarStatusPedido);
+        System.out.println(resultFinal);
 
     }
 
     public void deletarPedido(){
 
-        Long idPedidoExclusao;
+        long idPedidoExclusao;
 
         System.out.println("\n== EXCLUSÃO DE PEDIDO ==");
 
-        System.out.println("Digite o ID do Pedido que deseja deletar: ");
+        System.out.println("\nDigite o ID do Pedido que deseja deletar: ");
         idPedidoExclusao = sc.nextLong();
         sc.nextLine();
 
-       String resultadoFinalDeletarPedido = pedidoService.deletarPedido(idPedidoExclusao);
+       String resultFinal = pedidoService.deletarPedido(idPedidoExclusao);
 
-        System.out.println(resultadoFinalDeletarPedido);
+        System.out.println(resultFinal);
 
     }
 }

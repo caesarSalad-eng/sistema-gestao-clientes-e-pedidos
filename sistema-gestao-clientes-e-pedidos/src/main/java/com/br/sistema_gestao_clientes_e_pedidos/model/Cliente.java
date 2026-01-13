@@ -34,7 +34,7 @@ public class Cliente {
     @Column(nullable = false)
     private String telefone;
 
-    @OneToMany(mappedBy = "cliente")
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.EAGER)
     @Getter
     private List<Pedido> pedidos;
 

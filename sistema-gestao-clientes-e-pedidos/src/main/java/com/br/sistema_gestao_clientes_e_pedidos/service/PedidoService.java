@@ -5,6 +5,7 @@ import com.br.sistema_gestao_clientes_e_pedidos.model.Pedido;
 import com.br.sistema_gestao_clientes_e_pedidos.model.StatusPedido;
 import com.br.sistema_gestao_clientes_e_pedidos.repository.ClienteRepository;
 import com.br.sistema_gestao_clientes_e_pedidos.repository.PedidoRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -26,11 +27,11 @@ public class PedidoService {
 
     }
 
-    public String criarPedido(Long idCliente, String descricao, Double valorTotal){
+    public String criarPedido(Long idCliente, String descricao, double valorTotal){
 
         if(idCliente == null){
 
-            return "Id do Cliente inválido. Tente Novamente";
+            return "\nId do Cliente inválido. Tente Novamente";
 
         }
 
@@ -38,19 +39,19 @@ public class PedidoService {
 
          if (buscarClienteExistente.isEmpty()){
 
-             return "Cliente não encontrado. Tente Novamente";
+             return "\nCliente não encontrado. Tente Novamente";
 
          }
 
          Cliente cliente = buscarClienteExistente.get();
 
-         List<Pedido> buscarPedidoCliente = pedidoRepository.findByCliente(idCliente);
+         List<Pedido> buscarPedidoCliente = pedidoRepository.findByClienteId(idCliente);
 
          for (Pedido pedido : buscarPedidoCliente){
 
-             if (pedido.getStatusPedido() == StatusPedido.ATRASADO || pedido.getStatusPedido() == StatusPedido.ATIVO){
+             if (pedido.getStatusPedido() == StatusPedido.ATRASADO){
 
-                 return "Cliente tem pedidos ATRASADOS ou ATIVOS não foi possível criar um novo pedido";
+                 return "\nCliente tem pedidos ATRASADOS não foi possível criar um novo pedido";
 
              }
 
@@ -58,21 +59,20 @@ public class PedidoService {
 
          if (valorTotal <= 0){
 
-            return "Valor inválido. Tente Novamente";
+            return "\nValor inválido. Tente Novamente";
 
          }
 
          Pedido criacaoPedido = new Pedido();
 
          criacaoPedido.setCliente(cliente);
-         criacaoPedido.setValorTotal(valorTotal);
          criacaoPedido.setDescricao(descricao);
-         criacaoPedido.setDataPedido(new Date());
+         criacaoPedido.setValorTotal(valorTotal);
          criacaoPedido.setStatusPedido(StatusPedido.ATIVO);
 
          pedidoRepository.save(criacaoPedido);
 
-         return "Pedido criado com Sucesso!!";
+         return "\nPedido criado com Sucesso!!";
 
     }
 
@@ -82,7 +82,7 @@ public class PedidoService {
 
         if (listaPedidos.isEmpty()){
 
-            return "Não existem pedidos cadastrados";
+            return "\nNão existem pedidos cadastrados";
 
         }
 
@@ -90,11 +90,14 @@ public class PedidoService {
 
         for (Pedido pedido : listaPedidos){
 
-            resultadoListarPedidos.append("Id: ").append(pedido.getId());
-            resultadoListarPedidos.append("Cliente Vinculado: ").append(pedido.getCliente());
-            resultadoListarPedidos.append("Status: ").append(pedido.getStatusPedido());
-            resultadoListarPedidos.append("Valor: ").append(pedido.getValorTotal());
-            resultadoListarPedidos.append("Datas: ").append(pedido.getDataPedido());
+            System.out.println("DEBUG: Encontrei Pedido ID " + pedido.getId() + " para o cliente " + pedido.getCliente().getNome());
+
+            resultadoListarPedidos.append("\n\nId: ").append(pedido.getId());
+            resultadoListarPedidos.append("\nCliente Vinculado: ").append(pedido.getCliente().getNome());
+            resultadoListarPedidos.append("\nStatus: ").append(pedido.getStatusPedido());
+            resultadoListarPedidos.append("\nValor: ").append(pedido.getValorTotal());
+            resultadoListarPedidos.append("\nDescrição: ").append(pedido.getDescricao());
+            resultadoListarPedidos.append("\nDatas: ").append(pedido.getDataPedido());
 
         }
 
@@ -108,7 +111,7 @@ public class PedidoService {
 
         if (listarPorStatus.isEmpty()){
 
-            return "A lista está vazia";
+            return "\nA lista está vazia";
 
         }
 
@@ -116,11 +119,11 @@ public class PedidoService {
 
         for (Pedido pedidosListarPorStatus : listarPorStatus){
 
-            resultadoListarPorStatus.append("Id: ").append(pedidosListarPorStatus.getId());
-            resultadoListarPorStatus.append("Cliente Vinculado: ").append(pedidosListarPorStatus.getCliente());
-            resultadoListarPorStatus.append("Status: ").append(pedidosListarPorStatus.getStatusPedido());
-            resultadoListarPorStatus.append("Valor: ").append(pedidosListarPorStatus.getValorTotal());
-            resultadoListarPorStatus.append("Datas: ").append(pedidosListarPorStatus.getDataPedido());
+            resultadoListarPorStatus.append("\n\nId: ").append(pedidosListarPorStatus.getId());
+            resultadoListarPorStatus.append("\nCliente Vinculado: ").append(pedidosListarPorStatus.getCliente().getNome());
+            resultadoListarPorStatus.append("\nStatus: ").append(pedidosListarPorStatus.getStatusPedido());
+            resultadoListarPorStatus.append("\nValor: ").append(pedidosListarPorStatus.getValorTotal());
+            resultadoListarPorStatus.append("\nDatas: ").append(pedidosListarPorStatus.getDataPedido());
 
         }
 
@@ -129,17 +132,18 @@ public class PedidoService {
 
     public String listarPedidosPorCliente(Long idCliente){
 
-        List<Pedido> listarPedidosPorCliente = pedidoRepository.findByCliente(idCliente);
+        List<Pedido> listarPedidosPorCliente = pedidoRepository.findByClienteId(idCliente);
 
         StringBuilder resultadoListaPorCliente = new StringBuilder();
 
         for (Pedido pedidoListaPorCliente : listarPedidosPorCliente){
 
-            resultadoListaPorCliente.append("Id: ").append(pedidoListaPorCliente.getId());
-            resultadoListaPorCliente.append("Cliente Vinculado: ").append(pedidoListaPorCliente.getCliente());
-            resultadoListaPorCliente.append("Status: ").append(pedidoListaPorCliente.getStatusPedido());
-            resultadoListaPorCliente.append("Valor: ").append(pedidoListaPorCliente.getValorTotal());
-            resultadoListaPorCliente.append("Datas: ").append(pedidoListaPorCliente.getDataPedido());
+            resultadoListaPorCliente.append("\n\nId: ").append(pedidoListaPorCliente.getId());
+            resultadoListaPorCliente.append("\nCliente Vinculado: ").append(pedidoListaPorCliente.getCliente().getNome());
+            resultadoListaPorCliente.append("\nStatus: ").append(pedidoListaPorCliente.getStatusPedido());
+            resultadoListaPorCliente.append("\nDescrição: ").append(pedidoListaPorCliente.getDescricao());
+            resultadoListaPorCliente.append("\nValor: ").append(pedidoListaPorCliente.getValorTotal());
+            resultadoListaPorCliente.append("\nDatas: ").append(pedidoListaPorCliente.getDataPedido());
 
         }
 
@@ -151,7 +155,7 @@ public class PedidoService {
 
         if (idPedido == null){
 
-            return "Id inválido. Tente Novamente";
+            return "\nId inválido. Tente Novamente";
 
         }
 
@@ -159,7 +163,7 @@ public class PedidoService {
 
         if (buscarPedidoPorId.isEmpty()){
 
-            return "Não existe pedido com esse Id ";
+            return "\nNão existe pedido com esse Id ";
 
         }
 
@@ -168,72 +172,57 @@ public class PedidoService {
 
         StringBuilder resultadoBuscaPedidoPorId = new StringBuilder();
 
-        resultadoBuscaPedidoPorId.append("Id: ").append(pedidoBuscaPorId.getId());
-        resultadoBuscaPedidoPorId.append("Cliente Vinculado: ").append(pedidoBuscaPorId.getCliente());
-        resultadoBuscaPedidoPorId.append("Status: ").append(pedidoBuscaPorId.getStatusPedido());
-        resultadoBuscaPedidoPorId.append("Valor: ").append(pedidoBuscaPorId.getValorTotal());
-        resultadoBuscaPedidoPorId.append("Datas: ").append(pedidoBuscaPorId.getDataPedido());
+        resultadoBuscaPedidoPorId.append("\n\nId: ").append(pedidoBuscaPorId.getId());
+        resultadoBuscaPedidoPorId.append("\nCliente Vinculado: ").append(pedidoBuscaPorId.getCliente().getNome());
+        resultadoBuscaPedidoPorId.append("\nStatus: ").append(pedidoBuscaPorId.getStatusPedido());
+        resultadoBuscaPedidoPorId.append("\nDescrição: ").append(pedidoBuscaPorId.getDescricao());
+        resultadoBuscaPedidoPorId.append("\nValor: ").append(pedidoBuscaPorId.getValorTotal());
+        resultadoBuscaPedidoPorId.append("\nDatas: ").append(pedidoBuscaPorId.getDataPedido());
 
        return resultadoBuscaPedidoPorId.toString();
 
     }
 
-    public String atualizarPedido(Long idPedido, String novoCliente, Double novoValorTotal, String novaDescricao){
-
-        if (idPedido == null){
-
-            return "Id inválido. Tente Novamente";
-
-        }
+    public String atualizarPedido(Long idPedido, Long idNovoCliente, double novoValorTotal, String novaDescricao) {
 
         Optional<Pedido> buscarPedidoAtualizar = pedidoRepository.findById(idPedido);
 
         if (buscarPedidoAtualizar.isEmpty()){
 
-            return "Pedido não encontrado";
+            return "\nPedido não encontrado";
 
         }
 
         Pedido pedidoAtualizar = buscarPedidoAtualizar.get();
 
-        if (pedidoAtualizar.getStatusPedido() == StatusPedido.FINALIZADO || pedidoAtualizar.getStatusPedido() ==  StatusPedido.CANCELADO){
+        if (pedidoAtualizar.getStatusPedido() == StatusPedido.FINALIZADO || pedidoAtualizar.getStatusPedido() == StatusPedido.CANCELADO) {
 
-            return "Não é possível atualizar o pedido porque ele já foi FINALIZADO ou foi CANCELADO";
-
-        }
-
-        if (novoCliente == null){
-
-            return "Novo Cliente inválido.Tente Novamente";
+            return "\nNão é possível atualizar um pedido FINALIZADO ou CANCELADO";
 
         }
 
-        if (novoValorTotal < 0){
+        Optional<Cliente> clienteNoBanco = clienteRepository.findById(idNovoCliente);
 
-            return "Novo Valor inválido. Tente Novamente";
+        if (clienteNoBanco.isEmpty()){
 
-        }
-
-        if (novaDescricao == null){
-
-            return "Nova Descrição inválida. Tente Novamente";
+            return "\nNovo Cliente não encontrado no sistema!";
 
         }
 
+        pedidoAtualizar.setCliente(clienteNoBanco.get());
         pedidoAtualizar.setValorTotal(novoValorTotal);
         pedidoAtualizar.setDescricao(novaDescricao);
 
         pedidoRepository.save(pedidoAtualizar);
 
-        return "Pedido atualizado com Sucesso!!";
-
+        return "\nPedido atualizado com Sucesso!!";
     }
 
     public String alterarStatusPedido(Long idPedido, StatusPedido novoStatus){
 
         if(idPedido == null){
 
-            return "Id Pedido inválido. Tente Novamente";
+            return "\nId Pedido inválido. Tente Novamente";
 
         }
 
@@ -241,7 +230,7 @@ public class PedidoService {
 
         if (buscaPedido.isEmpty()){
 
-            return "Nenhum pedido encontrado";
+            return "\nNenhum pedido encontrado";
 
         }
 
@@ -250,13 +239,13 @@ public class PedidoService {
 
         if (statusAtual == StatusPedido.FINALIZADO || statusAtual == StatusPedido.CANCELADO){
 
-            return "Pedido foi CANCELADO ou já foi FINALIZADO. Não é possível fazer a alteração";
+            return "\nPedido foi CANCELADO ou já foi FINALIZADO. Não é possível fazer a alteração";
 
         }
 
         if (statusAtual == novoStatus){
 
-            return "O Pedido já está com esse Status";
+            return "\nO Pedido já está com esse Status";
 
         }
 
@@ -264,7 +253,7 @@ public class PedidoService {
 
             if (novoStatus == StatusPedido.ATIVO){
 
-                return "Pedido ATRASADO não pode voltar para ATIVO";
+                return "\nPedido ATRASADO não pode voltar para ATIVO";
 
             }
 
@@ -273,7 +262,7 @@ public class PedidoService {
         pedido.setStatusPedido(novoStatus);
         pedidoRepository.save(pedido);
 
-        return "Status atualizado com Sucesso!!";
+        return "\nStatus atualizado com Sucesso!!";
 
     }
 
@@ -281,7 +270,7 @@ public class PedidoService {
 
         if (idPedido == null){
 
-            return "Id do Pedido inválido. Tente Novamente";
+            return "\nId do Pedido inválido. Tente Novamente";
 
         }
 
@@ -289,7 +278,7 @@ public class PedidoService {
 
         if (buscaPedidoExclusao.isEmpty()){
 
-            return "Pedido não encontrado";
+            return "\nPedido não encontrado";
 
         }
 
@@ -297,13 +286,13 @@ public class PedidoService {
 
         if (pedidoExclusao.getStatusPedido() == StatusPedido.ATIVO || pedidoExclusao.getStatusPedido() == StatusPedido.ATRASADO){
 
-            return "Não foi possível deletar o Pedido porque ele está ATIVO ou ATRASADO";
+            return "\nNão foi possível deletar o Pedido porque ele está ATIVO ou ATRASADO";
 
         }
 
         pedidoRepository.delete(pedidoExclusao);
 
-        return "Pedido deletado com Sucesso!!";
+        return "\nPedido deletado com Sucesso!!";
 
     }
 
