@@ -37,10 +37,10 @@ Este projeto tem como objetivo praticar e demonstrar conhecimentos em:
 
 O projeto segue uma arquitetura em camadas:
 
-model
-repository
-service
-runner (Menu)
+- model
+- repository
+- service
+- runner (Menu)
 
 ### Responsabilidades:
 - **Model**: Entidades do sistema
